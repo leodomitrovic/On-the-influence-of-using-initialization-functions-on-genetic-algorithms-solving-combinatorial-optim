@@ -7,4 +7,7 @@
     <string name="lozinka">Lozinka</string>
     <string name="spremi">Spremi</string>
     <string name="dodaj_admina">Dodaj admina</string>
+    <string name="open">Open</string>
+    <string name="textview">TextView</string>
+    <string name="todo">TODO</string>
 </resources>

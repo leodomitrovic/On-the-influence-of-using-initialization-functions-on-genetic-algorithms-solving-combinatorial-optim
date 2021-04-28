@@ -26,7 +26,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
@@ -37,6 +39,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private static final int OPEN_DOCUMENT_REQUEST = 1;
@@ -123,6 +128,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 return true;
+            case R.id.mapa:
+                startActivity(new Intent(MainActivity.this, MapsActivity.class));
+                return true;
             case R.id.add_admin:
                 finish();
                 Intent i = new Intent(MainActivity.this, Register.class);
@@ -157,8 +165,8 @@ public class MainActivity extends AppCompatActivity {
             StorageReference mountainImagesRef = storageRef.child(user.getEmail());
             mountainsRef.getName().equals(mountainImagesRef.getName());
             mountainsRef.getPath().equals(mountainImagesRef.getPath());
-            Uri uri1 = data.getData();
-            UploadTask uploadTask = mountainsRef.putFile(uri1);
+            Uri uri = data.getData();
+            UploadTask uploadTask = mountainsRef.putFile(uri);
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
@@ -175,20 +183,31 @@ public class MainActivity extends AppCompatActivity {
                                 try {
                                     InputStream in;
                                     TextView o = findViewById(R.id.textView);
-                                    in = getContentResolver().openInputStream(uri1);
+                                    in = getContentResolver().openInputStream(uri);
                                     ExifInterface exif = new ExifInterface(in);
-                                    Location loc = new Location("");
+                                    Map<String, Object> image = new HashMap<>();
+                                    image.put("User-ID", auth.getCurrentUser().getUid());
+                                    image.put("Image URL", task.getResult().toString());
                                     float[] latlong = new float[2] ;
                                     if(exif.getLatLong(latlong)){
-                                        loc.setLatitude(latlong[0]);
-                                        loc.setLongitude(latlong[1]);
-                                        o.setText(loc.toString());
+                                        GeoPoint g = new GeoPoint(latlong[0], latlong[1]);
+                                        image.put("GeoTag", g);
                                         //45.260509 15.217208
                                     }
-                                    String date = exif.getAttribute(ExifInterface.TAG_DATETIME);
-                                    SimpleDateFormat fmt_Exif = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
-                                    loc.setTime(fmt_Exif.parse(date).getTime());
-                                } catch (IOException | ParseException e) {
+                                    Date date = new Date();
+                                    SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy. HH:mm:ss");
+                                    image.put("Date", format.format(date));
+                                    db.collection("Images").add(image).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(MainActivity.this, "Uspješno dodano", Toast.LENGTH_LONG).show();
+                                            } else {
+                                                Toast.makeText(MainActivity.this, task.getException().toString(), Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    });
+                                } catch (IOException e) {
                                     e.printStackTrace();
                                 }
                             } else {

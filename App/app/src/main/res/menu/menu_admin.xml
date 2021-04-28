@@ -8,6 +8,9 @@
         android:id="@+id/add_admin"
         android:title="@string/dodaj_admina" />
     <item
+        android:id="@+id/mapa"
+        android:title="@string/mapa" />
+    <item
         android:id="@+id/sign_out"
         android:title="@string/odjava" />
 </menu>

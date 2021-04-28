@@ -5,6 +5,9 @@
         android:id="@+id/user_data"
         android:title="@string/podaci" />
     <item
+        android:id="@+id/mapa"
+        android:title="@string/mapa" />
+    <item
         android:id="@+id/sign_out"
         android:title="@string/odjava" />
 </menu>

@@ -39,28 +39,18 @@ def udaljenost(x1, x2, y1, y2):
 
 while len(gradovi) > 0:
     
-    min_g_d = 10000
-    min_g = []
-    min_i = 0
-    for j in range(len(populacija)):
-        tmp = populacija[j]
-        for i in range(len(gradovi)):
-            d = udaljenost(gradovi[i][1], tmp[1], gradovi[i][2], tmp[2])
-            if d < min_g_d:
-                min_g_d = d
-                min_g = gradovi[i]
-                min_i = i
-    
     min_p_d = 100000
-    min_p = []
     min_p_i = -1
+    min_p_g = -1
     for i in range(len(populacija)):
-        d = udaljenost(populacija[i][1], min_g[1], populacija[i][2], min_g[2]) + udaljenost(populacija[i-1][1], min_g[1], populacija[i-1][2], min_g[2])
-        if d < min_p_d:
-            min_p_d = d
-            min_p_i = i
-    populacija.insert(min_p_i, min_g)
-    gradovi.pop(min_i)
+        for j in range(len(gradovi)):
+            d = udaljenost(populacija[i][1], gradovi[j][1], populacija[i][2], gradovi[j][2]) + udaljenost(populacija[i-1][1], gradovi[j][1], populacija[i-1][2], gradovi[j][2])
+            if d < min_p_d:
+                min_p_d = d
+                min_p_i = i
+                min_p_g = j
+    populacija.insert(min_p_i, gradovi[min_p_g])
+    gradovi.pop(min_p_g)
     
     if debugging:
         for i in populacija:

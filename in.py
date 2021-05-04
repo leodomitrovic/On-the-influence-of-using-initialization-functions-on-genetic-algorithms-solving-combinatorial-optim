@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import random
 
 debugging = False
+randomness = 0
 
 url = "http://elib.zib.de/pub/mp-testdata/tsp/tsplib/tsp/berlin52.tsp"
 file1 = urllib.request.urlopen(url)
@@ -30,7 +31,6 @@ slucajniIndeks = random.randint(0, len(gradovi)-1)
 populacija.append(gradovi[slucajniIndeks])
 gradovi.pop(slucajniIndeks)
 
-
 x = []
 y = []
 
@@ -39,18 +39,23 @@ def udaljenost(x1, x2, y1, y2):
 
 while len(gradovi) > 0:
     
-    min_g_d = 10000
-    min_g = []
-    min_i = 0
-    for j in range(len(populacija)):
-        tmp = populacija[j]
-        for i in range(len(gradovi)):
-            d = udaljenost(gradovi[i][1], tmp[1], gradovi[i][2], tmp[2])
-            if d < min_g_d:
-                min_g_d = d
-                min_g = gradovi[i]
-                min_i = i
-    
+    rand_num = random.randint(0, 100)
+    if randomness < rand_num:
+        min_g_d = 10000
+        min_g = []
+        min_i = 0
+        for j in range(len(populacija)):
+            tmp = populacija[j]
+            for i in range(len(gradovi)):
+                d = udaljenost(gradovi[i][1], tmp[1], gradovi[i][2], tmp[2])
+                if d < min_g_d:
+                    min_g_d = d
+                    min_g = gradovi[i]
+                    min_i = i
+    else:
+        min_i = random.randint(0, len(gradovi)-1)
+        min_g = gradovi[min_i]
+        
     min_p_d = 100000
     min_p = []
     min_p_i = -1
@@ -61,7 +66,7 @@ while len(gradovi) > 0:
             min_p_i = i
     populacija.insert(min_p_i, min_g)
     gradovi.pop(min_i)
-    
+
     if debugging:
         for i in populacija:
             x.append(i[1])

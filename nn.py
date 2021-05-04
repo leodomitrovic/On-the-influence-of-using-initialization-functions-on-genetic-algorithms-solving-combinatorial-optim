@@ -1,6 +1,7 @@
 import numpy as np
 import urllib
 import matplotlib.pyplot as plt
+import random
 
 url = "http://elib.zib.de/pub/mp-testdata/tsp/tsplib/tsp/berlin52.tsp"
 file1 = urllib.request.urlopen(url)
@@ -18,8 +19,9 @@ for line in file1:
         gradovi.append(tmp)
 
 populacija = []
-populacija.append(gradovi[0])
-gradovi.pop(0)
+slucajniIndeks = random.randint(0, len(gradovi)-1)
+populacija.append(gradovi[slucajniIndeks])
+gradovi.pop(slucajniIndeks)
 x = []
 y = []
 
@@ -40,4 +42,5 @@ while len(gradovi) > 0:
     y.append(min_g[2])
     
 plt.plot(x, y)
+plt.plot(x, y, 'ro')
 plt.show()

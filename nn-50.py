@@ -26,8 +26,9 @@ gradovi.pop(slucajniIndeks)
 x = []
 y = []
 br = 1
+populacija_heur = 24
 
-while br < velicina_populacije:
+while br < populacija_heur:
     tmp = populacija[-1]
     min_d = 10000
     min_g = []
@@ -44,6 +45,14 @@ while br < velicina_populacije:
     y.append(min_g[2])
     br += 1
     
+while br < velicina_populacije:
+    slucajniIndeks = random.randint(0, len(gradovi)-1)
+    populacija.append(gradovi[slucajniIndeks])
+    x.append(gradovi[slucajniIndeks][1])
+    y.append(gradovi[slucajniIndeks][2])
+    gradovi.pop(slucajniIndeks)
+    br += 1
+
 plt.plot(x, y)
 plt.plot(x, y, 'ro')
 plt.show()

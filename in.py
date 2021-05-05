@@ -22,6 +22,7 @@ for line in file1:
         gradovi.append(tmp)
 
 populacija = []
+velicina_populacije = 48
 
 slucajniIndeks = random.randint(0, len(gradovi)-1)
 populacija.append(gradovi[slucajniIndeks])
@@ -33,11 +34,12 @@ gradovi.pop(slucajniIndeks)
 
 x = []
 y = []
+br = 2
 
 def udaljenost(x1, x2, y1, y2):
     return np.sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))
 
-while len(gradovi) > 0:
+while br < velicina_populacije:
     
     rand_num = random.randint(0, 100)
     if randomness < rand_num:
@@ -67,6 +69,8 @@ while len(gradovi) > 0:
     populacija.insert(min_p_i, min_g)
     gradovi.pop(min_i)
 
+    br += 1
+    
     if debugging:
         for i in populacija:
             x.append(i[1])

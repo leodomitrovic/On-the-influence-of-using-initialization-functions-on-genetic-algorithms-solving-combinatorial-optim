@@ -14,6 +14,8 @@ class NearestNeighbour:
         self.randomness = randomness
         self.url = url
         
+    def udaljenost(self, x1, x2, y1, y2):
+        return np.sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))
         
     def calculate(self):
         population_heur = 0
@@ -25,19 +27,23 @@ class NearestNeighbour:
             population_heur = 5
         else: 
             population_heur = 0
-        file1 = urllib.request.urlopen(self.url)
-        file = []
+            
         gradovi = []
-        i = 0
-        for line in file1: 
-            i += 1
-            l = line.decode("utf-8").split()
-            file.append(l)
-            if i >= 7 and i <= 58:
-                tmp = []
-                for k in l:
-                    tmp.append(float(k))
-                gradovi.append(tmp)
+        if isinstance(self.url, list):
+            gradovi = self.url
+        else:
+            file1 = urllib.request.urlopen(self.url)
+            file = []
+            i = 0
+            for line in file1: 
+                i += 1
+                l = line.decode("utf-8").split()
+                file.append(l)
+                if i >= 7 and i <= 58:
+                    tmp = []
+                    for k in l:
+                        tmp.append(float(k))
+                    gradovi.append(tmp)
         
         populacija = []
         slucajniIndeks = random.randint(0, len(gradovi)-1)
@@ -48,7 +54,7 @@ class NearestNeighbour:
         ukupno = 0
         br = 1
         
-        while br < population_heur:
+        while br < population_heur + 1:
             tmp = populacija[-1]
             min_d = 10000
             min_g = []
@@ -74,7 +80,58 @@ class NearestNeighbour:
             gradovi.pop(slucajniIndeks)
             br += 1
             
+        # plt.plot(x, y)
+        # plt.plot(x, y, 'ro')
+        # plt.show()
+        
+        print (ukupno)
+        #print (populacija)
+        
+        improved = True
+        limit = 10000
+        br = 0
+        while improved and br < limit:
+            improved = False
+            for i in range(0, self.population_size - 2):
+                for j in range(i + 2, self.population_size):
+                    if j - i == 1:
+                        continue
+                    u1 = i
+                    u2 = i + 1
+                    v1 = j
+                    v2 = j + 1
+                    
+                    d1 = self.udaljenost(populacija[u1][1], populacija[u1][2], populacija[u2][1], populacija[u2][2])
+                    d2 = self.udaljenost(populacija[v1][1], populacija[v1][2], populacija[v2][1], populacija[v2][2])
+                    
+                    d1_new = self.udaljenost(populacija[u1][1], populacija[u1][2], populacija[v1][1], populacija[v1][2])
+                    d2_new = self.udaljenost(populacija[u2][1], populacija[u2][2], populacija[v2][1], populacija[v2][2])
+                    
+                    old = d1 + d2
+                    new = d1_new + d2_new
+                    
+                    if new < old:
+                        improved = True
+                        pom = []
+                        for i in range(u2, v1 + 1):
+                            pom.append(populacija[i])
+                        pom.reverse()
+                        
+                        j = 0
+                        for i in range(u2, v1 + 1):
+                            populacija[i] = pom[j]
+                            x[i] = pom[j][1]
+                            y[i] = pom[j][2]
+                            j += 1
+                        ukupno -= old - new
+                        #break
+                    #br += 1
+                    #if br >= limit:
+                        #break
+                #if improved or br >= limit:
+                        #break
         plt.plot(x, y)
         plt.plot(x, y, 'ro')
         plt.show()
+        #print (populacija)
         return ukupno

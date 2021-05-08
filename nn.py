@@ -27,8 +27,9 @@ class NearestNeighbour:
             population_heur = 5
         else: 
             population_heur = 0
-            
+        
         gradovi = []
+        debugging = True
         if isinstance(self.url, list):
             gradovi = self.url
         else:
@@ -53,6 +54,9 @@ class NearestNeighbour:
         y = []
         ukupno = 0
         br = 1
+        if len(gradovi) < population_heur:
+            population_heur = len(gradovi)
+            self.population_size = len(gradovi) + 1
         
         while br < population_heur + 1:
             tmp = populacija[-1]
@@ -79,18 +83,12 @@ class NearestNeighbour:
             y.append(gradovi[slucajniIndeks][2])
             gradovi.pop(slucajniIndeks)
             br += 1
-            
-        # plt.plot(x, y)
-        # plt.plot(x, y, 'ro')
-        # plt.show()
         
         print (ukupno)
-        #print (populacija)
         
         improved = True
-        limit = 10000
         br = 0
-        while improved and br < limit:
+        while improved:
             improved = False
             for i in range(0, self.population_size - 2):
                 for j in range(i + 2, self.population_size):
@@ -111,6 +109,7 @@ class NearestNeighbour:
                     new = d1_new + d2_new
                     
                     if new < old:
+                        br += 1
                         improved = True
                         pom = []
                         for i in range(u2, v1 + 1):
@@ -124,14 +123,13 @@ class NearestNeighbour:
                             y[i] = pom[j][2]
                             j += 1
                         ukupno -= old - new
-                        #break
-                    #br += 1
-                    #if br >= limit:
-                        #break
-                #if improved or br >= limit:
-                        #break
+                        break
+                
+                if improved:
+                    break
+        
         plt.plot(x, y)
         plt.plot(x, y, 'ro')
         plt.show()
-        #print (populacija)
+        print (br)
         return ukupno

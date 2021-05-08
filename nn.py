@@ -14,8 +14,8 @@ class NearestNeighbour:
         self.randomness = randomness
         self.url = url
         
-    def udaljenost(self, x1, x2, y1, y2):
-        return np.sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))
+    def udaljenost(self, x1, y1, x2, y2):
+        return np.sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2)) 
         
     def calculate(self):
         population_heur = 0
@@ -52,6 +52,9 @@ class NearestNeighbour:
         gradovi.pop(slucajniIndeks)
         x = []
         y = []
+        x.append(populacija[0][1])
+        y.append(populacija[0][2])
+        
         ukupno = 0
         br = 1
         if len(gradovi) < population_heur:
@@ -86,19 +89,28 @@ class NearestNeighbour:
         
         print (ukupno)
         
+        # 2-opt
+        
+        plt.plot(x, y)
+        plt.plot(x, y, 'bo')
+        plt.show()
+        
         improved = True
         br = 0
         while improved:
+            if br > 30:
+                break
+            
             improved = False
             for i in range(0, self.population_size - 2):
-                for j in range(i + 2, self.population_size):
+                for j in range(i + 2, self.population_size - 1):
                     if j - i == 1:
                         continue
                     u1 = i
                     u2 = i + 1
                     v1 = j
                     v2 = j + 1
-                    
+
                     d1 = self.udaljenost(populacija[u1][1], populacija[u1][2], populacija[u2][1], populacija[u2][2])
                     d2 = self.udaljenost(populacija[v1][1], populacija[v1][2], populacija[v2][1], populacija[v2][2])
                     
@@ -111,25 +123,40 @@ class NearestNeighbour:
                     if new < old:
                         br += 1
                         improved = True
+                        
+                        if debugging:
+                            plt.plot(x, y)
+                            plt.plot(x, y, 'bo')
+                            plt.plot([populacija[u1][1], populacija[u2][1]], [populacija[u1][2], populacija[u2][2]], color='g', lw=2)
+                            plt.plot([populacija[v1][1], populacija[v2][1]], [populacija[v1][2], populacija[v2][2]], color='r', lw=2)
+                            plt.show()
+                        
                         pom = []
-                        for i in range(u2, v1 + 1):
-                            pom.append(populacija[i])
+                        for k in range(u2, v1 + 1):
+                            pom.append(populacija[k])
                         pom.reverse()
                         
-                        j = 0
-                        for i in range(u2, v1 + 1):
-                            populacija[i] = pom[j]
-                            x[i] = pom[j][1]
-                            y[i] = pom[j][2]
-                            j += 1
+                        l = 0
+                        for k in range(u2, v1 + 1):
+                            populacija[k] = pom[l]
+                            x[k] = pom[l][1]
+                            y[k] = pom[l][2]
+                            l += 1
                         ukupno -= old - new
+
+                        if debugging:
+                            plt.plot(x, y)
+                            plt.plot(x, y, 'bo')
+                            plt.plot([populacija[u1][1], populacija[u2][1]], [populacija[u1][2], populacija[u2][2]], color='g', lw=2)
+                            plt.plot([populacija[v1][1], populacija[v2][1]], [populacija[v1][2], populacija[v2][2]], color='r', lw=2)
+                            plt.show()
                         break
                 
                 if improved:
                     break
         
         plt.plot(x, y)
-        plt.plot(x, y, 'ro')
+        plt.plot(x, y, 'bo')
         plt.show()
         print (br)
         return ukupno

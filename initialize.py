@@ -1,4 +1,5 @@
 from nn import NearestNeighbour
+import matplotlib.pyplot as plt
 
 url1 = "http://elib.zib.de/pub/mp-testdata/tsp/tsplib/tsp/berlin52.tsp"
 url2 = "http://elib.zib.de/pub/mp-testdata/tsp/tsplib/tsp/st70.tsp"
@@ -23,5 +24,14 @@ NN = NearestNeighbour(
     url = url1
 )
 
-res = NN.calculate()
-print (res)
+res = NN.algorithm()
+x = [item[1] for item in res]
+y = [item[2] for item in res]
+plt.plot(x, y)
+plt.plot(x, y, 'ro')
+# for solution in res:
+#     x = [item[1] for item in solution]
+#     y = [item[2] for item in solution]
+#     plt.plot(x, y)
+#     plt.plot(x, y, 'ro')
+#     plt.show()

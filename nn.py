@@ -23,8 +23,11 @@ class NearestNeighbour:
         population, population_fitness = zip(*merged_list)
         population_fitness = [score**(-1) for score in population_fitness]
         
+    def udaljenost(self, x1, y1, x2, y2):
+        return np.sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2)) 
+
     def generate_solution(self, gradovi):
-        solution_heur = 0
+        solution_heur = 0 
         if self.randomness == 1:
             solution_heur = 52
         elif self.randomness == 0.5:
@@ -39,7 +42,7 @@ class NearestNeighbour:
         slucajniIndeks = random.randint(0, len(gradovi_copy)-1)
         solution.append(gradovi_copy[slucajniIndeks])
         gradovi_copy.pop(slucajniIndeks)
-        
+    
         br = 1
         
         while br < solution_heur:
@@ -88,7 +91,7 @@ class NearestNeighbour:
                     
                     d1_new = self.udaljenost(solution[u1][1], solution[u1][2], solution[v1][1], solution[v1][2])
                     d2_new = self.udaljenost(solution[u2][1], solution[u2][2], solution[v2][1], solution[v2][2])
-                    
+
                     old = d1 + d2
                     new = d1_new + d2_new
                     

@@ -1,5 +1,9 @@
 from nn import NearestNeighbour
+from pomocne import PomocneFunkcije
+import numpy as np
+import urllib
 import matplotlib.pyplot as plt
+import random
 
 url1 = "http://elib.zib.de/pub/mp-testdata/tsp/tsplib/tsp/berlin52.tsp"
 url2 = "http://elib.zib.de/pub/mp-testdata/tsp/tsplib/tsp/st70.tsp"
@@ -15,20 +19,22 @@ url11 = "http://elib.zib.de/pub/mp-testdata/tsp/tsplib/tsp/pr144.tsp"
 url12 = "http://elib.zib.de/pub/mp-testdata/tsp/tsplib/tsp/pr152.tsp"
 url13 = [[1, 54, 67], [2, 54, 62], [3, 37, 84], [4, 41, 94], [5, 2, 99], [6, 7, 64], [7, 25, 62], [8, 22, 60], [9, 18, 4],
          [10, 4, 50], [11, 13, 40], [12, 18, 40], [13, 24, 42], [14, 25, 38], [15, 44, 35], [16, 41, 26], [17, 45, 21],
-         [18, 58, 35], [19, 62, 32], [20, 82,  7], [21, 91, 38], [22,  83, 46], [23, 71, 44], [24, 64, 60], [25, 68, 58],
+         [18, 58, 35], [19, 62, 32], [20, 82, 7], [21, 91, 38], [22,  83, 46], [23, 71, 44], [24, 64, 60], [25, 68, 58],
          [26, 83, 69], [27, 87, 76], [28, 74, 78], [29, 71, 71], [30, 58, 69]]
+
+population_size = 48
 
 NN = NearestNeighbour(
     population_size = 48,
     randomness = 1,
-    url = url1
+    url = url13
 )
 
-res = NN.algorithm()
-x = [item[1] for item in res]
-y = [item[2] for item in res]
-plt.plot(x, y)
-plt.plot(x, y, 'ro')
+population, population_fitness = NN.makePopulation()
+
+najboljiNN = PomocneFunkcije.algorithm(population, population_fitness, population_size)
+
+PomocneFunkcije.nacrtaj(najboljiNN, "NN algoritam")
 # for solution in res:
 #     x = [item[1] for item in solution]
 #     y = [item[2] for item in solution]

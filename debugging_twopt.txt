@@ -1,0 +1,82 @@
+def TwoOpt(solution):
+    debugging = False
+    
+    best_distance = HelpfulFunctions.evaluate(solution)
+    improvement_threshold=0.001
+    improvement_factor = 1
+    
+    print("twoopt start")
+    
+    execution_times = []
+    start_time = time.time()*1000
+    
+    counter = 0
+    improved = True
+    while improved:
+        execution_times.append( (int(time.time()*1000-start_time), 1) )
+        
+        previous_best = best_distance
+        improved = False
+        for i in range(0, len(solution) - 2):
+            execution_times.append( (int(time.time()*1000-start_time), 3) )
+            for j in range(i + 2, len(solution) - 1):
+                if j - i == 1:
+                    continue
+                u1 = i
+                u2 = i + 1
+                v1 = j
+                v2 = j + 1
+    
+                execution_times.append( (int(time.time()*1000-start_time), 4) )
+    
+                d1 = HelpfulFunctions.distance(solution[u1][1], solution[u1][2], solution[u2][1], solution[u2][2])
+                d2 = HelpfulFunctions.distance(solution[v1][1], solution[v1][2], solution[v2][1], solution[v2][2])
+                
+                d1_new = HelpfulFunctions.distance(solution[u1][1], solution[u1][2], solution[v1][1], solution[v1][2])
+                d2_new = HelpfulFunctions.distance(solution[u2][1], solution[u2][2], solution[v2][1], solution[v2][2])
+
+                execution_times.append( (int(time.time()*1000-start_time), 5) )
+                old = d1 + d2
+                new = d1_new + d2_new
+                
+                if new < old:
+                    execution_times.append( (int(time.time()*1000-start_time), 6) )
+                    counter += 1
+
+                    reversed_solution = solution[u2:v1+1]
+                    reversed_solution.reverse()
+                    solution[u2:v1+1] = reversed_solution
+
+                    if debugging:
+                        x = [item[1] for item in solution]
+                        y = [item[2] for item in solution]
+                        plt.plot(x, y)
+                        plt.plot(x, y, 'bo')
+                        plt.plot([solution[u1][1], solution[u2][1]], [solution[u1][2], solution[u2][2]], color='g', lw=2)
+                        plt.plot([solution[v1][1], solution[v2][1]], [solution[v1][2], solution[v2][2]], color='r', lw=2)
+                        plt.show()
+                    improved = True
+                    execution_times.append( (int(time.time()*1000-start_time), 7) )
+                    break
+            #if improved:
+            #    break
+
+        improvement_factor = 1 - best_distance/previous_best
+    print("twoopt end")
+    np.save('twoopttimeschedule', execution_times)
+    return solution
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+execution_times = np.load('twoopttimeschedule.npy')
+
+x = [item[0] for item in execution_times]
+y = [item[1] for item in execution_times]
+plt.plot(x, y, linewidth=1)
+plt.plot(x, y, 'ro', markersize=1)
+plt.xlim((0, 500))
+#plt.title(title)
+fig = plt.gcf()
+fig.savefig('test2png.png', dpi=600)

@@ -1,95 +1,40 @@
-import numpy as np
-import urllib
-import matplotlib.pyplot as plt
 import random
+from hfunctions import HelpfulFunctions
 
-debugging = False
-randomness = 50
+class I1:
 
-url = "http://elib.zib.de/pub/mp-testdata/tsp/tsplib/tsp/berlin52.tsp"
-file1 = urllib.request.urlopen(url)
-file = []
-gradovi = []
-i = 0
-for line in file1: 
-    i += 1
-    l = line.decode("utf-8").split()
-    file.append(l)
-    if i >= 7 and i <= 58:
-        tmp = []
-        for k in l:
-            tmp.append(float(k))
-        gradovi.append(tmp)
+    def generate_solution(cities, solution_heur):
+            
+        cities_copy = cities[:]
+        solution = []
+        
+        random_index = random.randint(0, len(cities_copy)-1)
+        solution.append(cities_copy[random_index])
+        cities_copy.pop(random_index)
+        
+        random_index = random.randint(0, len(cities_copy)-1)
+        solution.append(cities_copy[random_index])
+        cities_copy.pop(random_index)
 
-populacija = []
-velicina_populacije = 48
+        counter = 2        
+        while counter < solution_heur:
+            
+            min_p_d = 100000
+            min_p_i = -1
+            min_p_g = -1
+            for i in range(len(solution)):
+                for j in range(len(cities_copy)):
+                    d = HelpfulFunctions.distance(solution[i][1], cities_copy[j][1], solution[i][2], cities_copy[j][2]) + HelpfulFunctions.distance(solution[i-1][1], cities_copy[j][1], solution[i-1][2], cities_copy[j][2])
+                    if d < min_p_d:
+                        min_p_d = d
+                        min_p_i = i
+                        min_p_g = j
+            solution.insert(min_p_i, cities_copy[min_p_g])
+            cities_copy.pop(min_p_g)
+            counter += 1
 
-slucajniIndeks = random.randint(0, len(gradovi)-1)
-populacija.append(gradovi[slucajniIndeks])
-gradovi.pop(slucajniIndeks)
-
-slucajniIndeks = random.randint(0, len(gradovi)-1)
-populacija.append(gradovi[slucajniIndeks])
-gradovi.pop(slucajniIndeks)
-
-br = 2
-
-x = []
-y = []
-
-def udaljenost(x1, x2, y1, y2):
-    return np.sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))
-
-while br < velicina_populacije:
-    
-    rand_num = random.randint(0, 100)
-    min_p_d = 100000
-    if randomness < rand_num:
-        min_p_i = -1
-        min_p_g = -1
-        for i in range(len(populacija)):
-            for j in range(len(gradovi)):
-                d = udaljenost(populacija[i][1], gradovi[j][1], populacija[i][2], gradovi[j][2]) + udaljenost(populacija[i-1][1], gradovi[j][1], populacija[i-1][2], gradovi[j][2])
-                if d < min_p_d:
-                    min_p_d = d
-                    min_p_i = i
-                    min_p_g = j
-    else:
-        min_p_g = random.randint(0, len(gradovi)-1) 
-        for i in range(len(populacija)):
-            d = udaljenost(populacija[i][1], gradovi[min_p_g][1], populacija[i][2], gradovi[min_p_g][2]) + udaljenost(populacija[i-1][1], gradovi[min_p_g][1], populacija[i-1][2], gradovi[min_p_g][2])
-            if d < min_p_d:
-                min_p_d = d
-                min_p_i = i
-    
-    populacija.insert(min_p_i, gradovi[min_p_g])
-    gradovi.pop(min_p_g)
-    br += 1
-    
-    if debugging:
-        for i in populacija:
-            x.append(i[1])
-            y.append(i[2])
-        x.append(populacija[0][1])
-        y.append(populacija[0][2])
-        plt.plot(x, y)
-        plt.plot(x, y, 'ro')
-        plt.show()
-        x = []
-        y = []
-
-d_sum = 0
-    
-for i in range(len(populacija)):
-    d_sum = d_sum + udaljenost(populacija[i][1], populacija[i-1][1], populacija[i][2], populacija[i-1][2])
-    x.append(populacija[i][1])
-    y.append(populacija[i][2])
-
-x.append(populacija[0][1])
-y.append(populacija[0][2])
-    
-plt.plot(x, y)
-plt.plot(x, y, 'ro')
-plt.show()
-
-print("Ukupna udaljenost: " + str(d_sum))
+        while len(cities_copy) > 0:
+            random_index = random.randint(0, len(cities_copy) - 1)
+            solution.append(cities_copy[random_index])
+            cities_copy.pop(random_index)
+        return solution
